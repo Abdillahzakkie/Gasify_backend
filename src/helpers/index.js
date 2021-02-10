@@ -17,8 +17,8 @@ const loadBlockchainData = async () => {
 const addNewReferral = async _data => {
     try {
         const { user } = _data;
-        if(web3.utils.isAddress(user)) throw new Error(`${user} is not a vaild Ethereum address`);
-        
+        if(!web3.utils.isAddress(user)) throw new Error(`${user} is not a vaild Ethereum address`);
+
         const result = await GenerateReferralID.find({ user });
         if(result.length > 0) throw new Error("Referral have already been registered");
         const _hash = await hash(`${user}${Date.now()}`, 10);
