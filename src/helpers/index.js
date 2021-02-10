@@ -11,7 +11,6 @@ let web3;
 const loadBlockchainData = async () => {
     try {
         web3 = await loadWeb3();
-        // await test()
     } catch (error) { return error; }
 }
 
@@ -54,33 +53,36 @@ const findReferrerByAddress = async _data => {
 const filterHash = async _data => {
     const result = _data.split("");
     const _maxLength = _data.length;
-    const _minLength = _maxLength - 7;
+    const _minLength = _maxLength - 9;
     let temptItem = [];
 
-    for(let i = 0; i < 6; i++) temptItem = [...temptItem, result[i]];
+    for(let i = 0; i < 8; i++) temptItem = [...temptItem, result[i]];
     for(let i = _minLength; i < _maxLength; i++) temptItem = [...temptItem, result[i]];
     temptItem = temptItem.join("");
     return temptItem;
 }
 
-const test = async () => {
-    try {
-        const _wallet = web3.utils.toChecksumAddress("0x491dee00dde856342eEFfb3320035419D5c3E28C");
-        const _endBlock = await web3.eth.getBlockNumber();
-        let _startBlock = 0;
+// const test = async () => {
+//     try {
+//         const _wallet = web3.utils.toChecksumAddress("0x491dee00dde856342eEFfb3320035419D5c3E28C");
+//         const _endBlock = await web3.eth.getBlockNumber();
+//         let _startBlock = 0;
 
-        let result = await fetch(`//api.etherscan.io/api?module=account&action=txlist&address=${_wallet}&startblock=${_startBlock}&endblock=${_endBlock}&sort=desc&apikey=${process.env.Etherscan_Api_Key}`)
-        result = await result.json();
-        console.log(result);
-    } catch (error) {
-        console.log(error);
-    }
-}
+//         let result = await fetch(`//api.etherscan.io/api?module=account&action=txlist&address=${_wallet}&startblock=${_startBlock}&endblock=${_endBlock}&sort=desc&apikey=${process.env.Etherscan_Api_Key}`)
+//         result = await result.json();
+//         console.log(result);
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
 
 const newUserRegistration = async _data => {
     try {
         const { user } = _data;
-        let referralID = _data.referralID ? _data.referralID : process.env.adminReferralAddress;
+        const isValidReferralID = await GenerateReferralID.find({ referralID: _data.referralID });
+        let referralID = process.env.adminReferralAddress;
+        if(isValidReferralID.length > 0) referralID = _data.referralID;
+        
         const isRegisteredAccount = await ReferralRegistrgation.find({ user });
 
         if(isRegisteredAccount.length > 0) return new Error("user have already been registered");
